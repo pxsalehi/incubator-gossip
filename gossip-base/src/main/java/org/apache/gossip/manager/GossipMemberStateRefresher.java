@@ -26,8 +26,12 @@ import org.apache.gossip.model.PerNodeDataMessage;
 import org.apache.gossip.model.ShutdownMessage;
 import org.apache.log4j.Logger;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 
@@ -36,15 +40,16 @@ public class GossipMemberStateRefresher implements Runnable {
 
   private final Map<LocalMember, GossipState> members;
   private final GossipSettings settings;
-  private final GossipListener listener;
+  private final List<GossipListener> listeners = new CopyOnWriteArrayList<>();
   private final Clock clock;
   private final BiFunction<String, String, PerNodeDataMessage> findPerNodeGossipData;
+  private final ExecutorService executor = Executors.newCachedThreadPool();
 
   public GossipMemberStateRefresher(Map<LocalMember, GossipState> members, GossipSettings settings,
                                     GossipListener listener, BiFunction<String, String, PerNodeDataMessage> findPerNodeGossipData) {
     this.members = members;
     this.settings = settings;
-    this.listener = listener;
+    listeners.add(listener);
     this.findPerNodeGossipData = findPerNodeGossipData;
     clock = new SystemClock();
   }
@@ -74,7 +79,9 @@ public class GossipMemberStateRefresher implements Runnable {
 
       if (entry.getValue() != requiredState) {
         members.put(entry.getKey(), requiredState);
-        listener.gossipEvent(entry.getKey(), requiredState);
+        /* Call listeners asynchronously */
+        for (GossipListener listener: listeners)
+          executor.execute(() -> listener.gossipEvent(entry.getKey(), requiredState));
       }
     }
   }
@@ -112,10 +119,17 @@ public class GossipMemberStateRefresher implements Runnable {
     if (s.getShutdownAtNanos() > l.getKey().getHeartbeat()) {
       members.put(l.getKey(), GossipState.DOWN);
       if (l.getValue() == GossipState.UP) {
-        listener.gossipEvent(l.getKey(), GossipState.DOWN);
+        for (GossipListener listener: listeners)
+          executor.execute(() -> listener.gossipEvent(l.getKey(), GossipState.DOWN));
       }
       return true;
     }
     return false;
   }
+
+  public void register(GossipListener listener) {
+    listeners.add(listener);
+  }
+
+
 }
