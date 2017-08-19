@@ -366,4 +366,8 @@ public abstract class GossipManager {
   public void unregisterSharedDataSubscriber(UpdateSharedDataEventHandler handler){
     gossipCore.unregisterSharedDataSubscriber(handler);
   }
+
+  public void registerGossipListener(GossipListener listener) {
+    memberStateRefresher.register(listener);
+  }
 }
