@@ -28,7 +28,22 @@ public class SharedDataMessage extends Base {
   private Long timestamp;
   private Long expireAt;
   private Replicable<SharedDataMessage> replicable;
-  
+
+  // TODO: why was there no constructor? If I add one, should I keep the default constructor?
+
+  public SharedDataMessage() {
+  }
+
+  public SharedDataMessage(String nodeId, String key, Object payload, Long timestamp, Long expireAt,
+                           Replicable<SharedDataMessage> replicable) {
+    this.nodeId = nodeId;
+    this.key = key;
+    this.payload = payload;
+    this.timestamp = timestamp;
+    this.expireAt = expireAt;
+    this.replicable = replicable;
+  }
+
   public String getNodeId() {
     return nodeId;
   }

@@ -39,7 +39,7 @@ import org.apache.log4j.Logger;
 import static com.codahale.metrics.MetricRegistry.name;
 
 /**
- * The ActiveGossipThread is sends information. Pick a random partner and send the membership list to that partner
+ * The ActiveGossipThread sends information. Pick a random partner and send the membership list to that partner
  */
 public abstract class AbstractActiveGossiper {
 
@@ -84,22 +84,34 @@ public abstract class AbstractActiveGossiper {
       return;
     }
     long startTime = System.currentTimeMillis();
+
+    UdpSharedDataMessage udpMessage = new UdpSharedDataMessage();
+    udpMessage.setUuid(UUID.randomUUID().toString());
+    udpMessage.setUriFrom(me.getId());
+
     for (Entry<String, SharedDataMessage> innerEntry : gossipCore.getSharedData().entrySet()){
       if (innerEntry.getValue().getReplicable() != null && !innerEntry.getValue().getReplicable()
               .shouldReplicate(me, member, innerEntry.getValue())) {
         continue;
       }
-      UdpSharedDataMessage message = new UdpSharedDataMessage();
-      message.setUuid(UUID.randomUUID().toString());
-      message.setUriFrom(me.getId());
-      message.setExpireAt(innerEntry.getValue().getExpireAt());
-      message.setKey(innerEntry.getValue().getKey());
-      message.setNodeId(innerEntry.getValue().getNodeId());
-      message.setTimestamp(innerEntry.getValue().getTimestamp());
-      message.setPayload(innerEntry.getValue().getPayload());
-      message.setReplicable(innerEntry.getValue().getReplicable());
-      gossipCore.sendOneWay(message, member.getUri());
+      SharedDataMessage message = new SharedDataMessage(
+              innerEntry.getValue().getNodeId(),
+              innerEntry.getValue().getKey(),
+              innerEntry.getValue().getPayload(),
+              innerEntry.getValue().getTimestamp(),
+              innerEntry.getValue().getExpireAt(),
+              innerEntry.getValue().getReplicable());
+      udpMessage.addMessage(message);
+      if (udpMessage.getMessages().size() == 100) {
+        gossipCore.sendOneWay(udpMessage, member.getUri());
+        udpMessage = new UdpSharedDataMessage();
+        udpMessage.setUuid(UUID.randomUUID().toString());
+        udpMessage.setUriFrom(me.getId());
+      }
     }
+    if (udpMessage.getMessages().size() > 0)
+      gossipCore.sendOneWay(udpMessage, member.getUri());
+
     sharedDataHistogram.update(System.currentTimeMillis() - startTime);
   }
   
