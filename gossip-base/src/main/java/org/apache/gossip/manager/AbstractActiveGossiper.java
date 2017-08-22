@@ -94,13 +94,13 @@ public abstract class AbstractActiveGossiper {
               .shouldReplicate(me, member, innerEntry.getValue())) {
         continue;
       }
-      SharedDataMessage message = new SharedDataMessage(
-              innerEntry.getValue().getNodeId(),
-              innerEntry.getValue().getKey(),
-              innerEntry.getValue().getPayload(),
-              innerEntry.getValue().getTimestamp(),
-              innerEntry.getValue().getExpireAt(),
-              innerEntry.getValue().getReplicable());
+      SharedDataMessage message = new SharedDataMessage();
+      message.setExpireAt(innerEntry.getValue().getExpireAt());
+      message.setKey(innerEntry.getValue().getKey());
+      message.setNodeId(innerEntry.getValue().getNodeId());
+      message.setTimestamp(innerEntry.getValue().getTimestamp());
+      message.setPayload(innerEntry.getValue().getPayload());
+      message.setReplicable(innerEntry.getValue().getReplicable());
       udpMessage.addMessage(message);
       if (udpMessage.getMessages().size() == 100) {
         gossipCore.sendOneWay(udpMessage, member.getUri());
@@ -111,7 +111,6 @@ public abstract class AbstractActiveGossiper {
     }
     if (udpMessage.getMessages().size() > 0)
       gossipCore.sendOneWay(udpMessage, member.getUri());
-
     sharedDataHistogram.update(System.currentTimeMillis() - startTime);
   }
   
@@ -121,22 +120,31 @@ public abstract class AbstractActiveGossiper {
     }
     long startTime = System.currentTimeMillis();
     for (Entry<String, ConcurrentHashMap<String, PerNodeDataMessage>> entry : gossipCore.getPerNodeData().entrySet()){
+      UdpPerNodeDataMessage udpMessage = new UdpPerNodeDataMessage();
+      udpMessage.setUuid(UUID.randomUUID().toString());
+      udpMessage.setUriFrom(me.getId());
       for (Entry<String, PerNodeDataMessage> innerEntry : entry.getValue().entrySet()){
         if (innerEntry.getValue().getReplicable() != null && !innerEntry.getValue().getReplicable()
                 .shouldReplicate(me, member, innerEntry.getValue())) {
           continue;
         }
-        UdpPerNodeDataMessage message = new UdpPerNodeDataMessage();
-        message.setUuid(UUID.randomUUID().toString());
-        message.setUriFrom(me.getId());
+        PerNodeDataMessage message = new PerNodeDataMessage();
         message.setExpireAt(innerEntry.getValue().getExpireAt());
         message.setKey(innerEntry.getValue().getKey());
         message.setNodeId(innerEntry.getValue().getNodeId());
         message.setTimestamp(innerEntry.getValue().getTimestamp());
         message.setPayload(innerEntry.getValue().getPayload());
         message.setReplicable(innerEntry.getValue().getReplicable());
-        gossipCore.sendOneWay(message, member.getUri());   
+        udpMessage.addMessage(message);
+        if (udpMessage.getMessages().size() == 100) {
+          gossipCore.sendOneWay(udpMessage, member.getUri());
+          udpMessage = new UdpPerNodeDataMessage();
+          udpMessage.setUuid(UUID.randomUUID().toString());
+          udpMessage.setUriFrom(me.getId());
+        }
       }
+      if (udpMessage.getMessages().size() > 0)
+        gossipCore.sendOneWay(udpMessage, member.getUri());
     }
     sendPerNodeDataHistogram.update(System.currentTimeMillis() - startTime);
   }

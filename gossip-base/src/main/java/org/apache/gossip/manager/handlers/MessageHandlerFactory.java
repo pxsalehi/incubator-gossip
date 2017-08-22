@@ -20,12 +20,7 @@ package org.apache.gossip.manager.handlers;
 
 import org.apache.gossip.manager.GossipCore;
 import org.apache.gossip.manager.GossipManager;
-import org.apache.gossip.model.ActiveGossipMessage;
-import org.apache.gossip.model.Base;
-import org.apache.gossip.model.PerNodeDataMessage;
-import org.apache.gossip.model.Response;
-import org.apache.gossip.model.SharedDataMessage;
-import org.apache.gossip.model.ShutdownMessage;
+import org.apache.gossip.model.*;
 
 import java.util.Arrays;
 
@@ -35,8 +30,8 @@ public class MessageHandlerFactory {
     return concurrentHandler(
         new TypedMessageHandler(Response.class, new ResponseHandler()),
         new TypedMessageHandler(ShutdownMessage.class, new ShutdownMessageHandler()),
-        new TypedMessageHandler(PerNodeDataMessage.class, new PerNodeDataMessageHandler()),
-        new TypedMessageHandler(SharedDataMessage.class, new SharedDataMessageHandler()),
+        new TypedMessageHandler(PerNodeDataBulkMessage.class, new PerNodeDataMessageHandler()),
+        new TypedMessageHandler(SharedDataBulkMessage.class, new SharedDataMessageHandler()),
         new TypedMessageHandler(ActiveGossipMessage.class, new ActiveGossipMessageHandler())
     );
   }

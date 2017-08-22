@@ -17,18 +17,12 @@
  */
 package org.apache.gossip.udp;
 
-import org.apache.gossip.model.Base;
-import org.apache.gossip.model.SharedDataMessage;
+import org.apache.gossip.model.SharedDataBulkMessage;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-public class UdpSharedDataMessage extends Base implements Trackable {
+public class UdpSharedDataMessage extends SharedDataBulkMessage implements Trackable {
 
   private String uriFrom;
   private String uuid;
-  private List<SharedDataMessage> messages = new ArrayList<>();
   
   public String getUriFrom() {
     return uriFrom;
@@ -46,20 +40,10 @@ public class UdpSharedDataMessage extends Base implements Trackable {
     this.uuid = uuid;
   }
 
-  public void addMessage(SharedDataMessage msg) {
-    messages.add(msg);
-  }
-
-  public List<SharedDataMessage> getMessages() {
-    return messages;
-  }
-
   @Override
   public String toString() {
     return "UdpSharedGossipDataMessage [uriFrom=" + uriFrom + ", uuid=" + uuid + ", getNodeId()="
-            + ", messages=["
-            + messages.stream().map(SharedDataMessage::toString).collect(Collectors.joining(","))
-            + "] ]";
+            + ", messages=[" + super.toString() + "] ]";
   }
 
 }

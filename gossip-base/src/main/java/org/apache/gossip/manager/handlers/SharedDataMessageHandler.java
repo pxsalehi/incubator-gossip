@@ -20,6 +20,7 @@ package org.apache.gossip.manager.handlers;
 import org.apache.gossip.manager.GossipCore;
 import org.apache.gossip.manager.GossipManager;
 import org.apache.gossip.model.Base;
+import org.apache.gossip.model.SharedDataMessage;
 import org.apache.gossip.udp.UdpSharedDataMessage;
 
 public class SharedDataMessageHandler implements MessageHandler{
@@ -32,8 +33,9 @@ public class SharedDataMessageHandler implements MessageHandler{
    */
   @Override
   public boolean invoke(GossipCore gossipCore, GossipManager gossipManager, Base base) {
-    UdpSharedDataMessage message = (UdpSharedDataMessage) base;
-    gossipCore.addSharedData(message);
+    UdpSharedDataMessage udpMessage = (UdpSharedDataMessage) base;
+    for (SharedDataMessage dataMsg: udpMessage.getMessages())
+      gossipCore.addSharedData(dataMsg);
     return true;
   }
 }
