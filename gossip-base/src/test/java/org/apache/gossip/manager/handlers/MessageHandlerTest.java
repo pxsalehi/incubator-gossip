@@ -21,7 +21,7 @@ import org.apache.gossip.manager.GossipCore;
 import org.apache.gossip.manager.GossipManager;
 import org.apache.gossip.model.ActiveGossipMessage;
 import org.apache.gossip.model.Base;
-import org.apache.gossip.udp.UdpSharedDataMessage;
+import org.apache.gossip.udp.UdpSharedDataBulkMessage;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -170,7 +170,7 @@ public class MessageHandlerTest {
     //UdpSharedGossipDataMessage with null gossipCore -> exception
     boolean thrown = false;
     try {
-      mi.invoke(null, null, new UdpSharedDataMessage());
+      mi.invoke(null, null, new UdpSharedDataBulkMessage());
     } catch (NullPointerException e) {
       thrown = true;
     }

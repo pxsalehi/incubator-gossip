@@ -32,8 +32,8 @@ import org.apache.gossip.model.Response;
 import org.apache.gossip.model.SharedDataMessage;
 import org.apache.gossip.model.ShutdownMessage;
 import org.apache.gossip.udp.UdpActiveGossipMessage;
-import org.apache.gossip.udp.UdpPerNodeDataMessage;
-import org.apache.gossip.udp.UdpSharedDataMessage;
+import org.apache.gossip.udp.UdpPerNodeDataBulkMessage;
+import org.apache.gossip.udp.UdpSharedDataBulkMessage;
 import org.apache.log4j.Logger;
 
 import static com.codahale.metrics.MetricRegistry.name;
@@ -44,7 +44,7 @@ import static com.codahale.metrics.MetricRegistry.name;
 public abstract class AbstractActiveGossiper {
 
   protected static final Logger LOGGER = Logger.getLogger(AbstractActiveGossiper.class);
-  
+
   protected final GossipManager gossipManager;
   protected final GossipCore gossipCore;
   private final Histogram sharedDataHistogram;
@@ -64,7 +64,7 @@ public abstract class AbstractActiveGossiper {
   public void init() {
 
   }
-  
+
   public void shutdown() {
 
   }
@@ -78,14 +78,14 @@ public abstract class AbstractActiveGossiper {
     m.setShutdownAtNanos(gossipManager.getClock().nanoTime());
     gossipCore.sendOneWay(m, target.getUri());
   }
-  
+
   public final void sendSharedData(LocalMember me, LocalMember member){
     if (member == null){
       return;
     }
     long startTime = System.currentTimeMillis();
 
-    UdpSharedDataMessage udpMessage = new UdpSharedDataMessage();
+    UdpSharedDataBulkMessage udpMessage = new UdpSharedDataBulkMessage();
     udpMessage.setUuid(UUID.randomUUID().toString());
     udpMessage.setUriFrom(me.getId());
 
@@ -104,7 +104,7 @@ public abstract class AbstractActiveGossiper {
       udpMessage.addMessage(message);
       if (udpMessage.getMessages().size() == 100) {
         gossipCore.sendOneWay(udpMessage, member.getUri());
-        udpMessage = new UdpSharedDataMessage();
+        udpMessage = new UdpSharedDataBulkMessage();
         udpMessage.setUuid(UUID.randomUUID().toString());
         udpMessage.setUriFrom(me.getId());
       }
@@ -113,14 +113,14 @@ public abstract class AbstractActiveGossiper {
       gossipCore.sendOneWay(udpMessage, member.getUri());
     sharedDataHistogram.update(System.currentTimeMillis() - startTime);
   }
-  
+
   public final void sendPerNodeData(LocalMember me, LocalMember member){
     if (member == null){
       return;
     }
     long startTime = System.currentTimeMillis();
     for (Entry<String, ConcurrentHashMap<String, PerNodeDataMessage>> entry : gossipCore.getPerNodeData().entrySet()){
-      UdpPerNodeDataMessage udpMessage = new UdpPerNodeDataMessage();
+      UdpPerNodeDataBulkMessage udpMessage = new UdpPerNodeDataBulkMessage();
       udpMessage.setUuid(UUID.randomUUID().toString());
       udpMessage.setUriFrom(me.getId());
       for (Entry<String, PerNodeDataMessage> innerEntry : entry.getValue().entrySet()){
@@ -138,7 +138,7 @@ public abstract class AbstractActiveGossiper {
         udpMessage.addMessage(message);
         if (udpMessage.getMessages().size() == 100) {
           gossipCore.sendOneWay(udpMessage, member.getUri());
-          udpMessage = new UdpPerNodeDataMessage();
+          udpMessage = new UdpPerNodeDataBulkMessage();
           udpMessage.setUuid(UUID.randomUUID().toString());
           udpMessage.setUriFrom(me.getId());
         }
@@ -148,7 +148,7 @@ public abstract class AbstractActiveGossiper {
     }
     sendPerNodeDataHistogram.update(System.currentTimeMillis() - startTime);
   }
-    
+
   /**
    * Performs the sending of the membership list, after we have incremented our own heartbeat.
    */
@@ -173,7 +173,7 @@ public abstract class AbstractActiveGossiper {
     }
     sendMembershipHistorgram.update(System.currentTimeMillis() - startTime);
   }
-    
+
   protected final Member convert(LocalMember member){
     Member gm = new Member();
     gm.setCluster(member.getClusterName());
@@ -183,9 +183,9 @@ public abstract class AbstractActiveGossiper {
     gm.setProperties(member.getProperties());
     return gm;
   }
-  
+
   /**
-   * 
+   *
    * @param memberList
    *          An immutable list
    * @return The chosen LocalGossipMember to gossip with.

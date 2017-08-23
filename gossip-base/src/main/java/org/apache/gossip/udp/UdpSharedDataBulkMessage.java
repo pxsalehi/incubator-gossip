@@ -17,9 +17,9 @@
  */
 package org.apache.gossip.udp;
 
-import org.apache.gossip.model.PerNodeDataBulkMessage;
+import org.apache.gossip.model.SharedDataBulkMessage;
 
-public class UdpPerNodeDataMessage extends PerNodeDataBulkMessage implements Trackable {
+public class UdpSharedDataBulkMessage extends SharedDataBulkMessage implements Trackable {
 
   private String uriFrom;
   private String uuid;
@@ -42,7 +42,7 @@ public class UdpPerNodeDataMessage extends PerNodeDataBulkMessage implements Tra
 
   @Override
   public String toString() {
-    return "UdpGossipDataMessage [uriFrom=" + uriFrom + ", uuid=" + uuid
+    return "UdpSharedGossipDataMessage [uriFrom=" + uriFrom + ", uuid=" + uuid + ", getNodeId()="
             + ", messages=[" + super.toString() + "] ]";
   }
 
