@@ -27,11 +27,15 @@ import java.util.Arrays;
 public class MessageHandlerFactory {
 
   public static MessageHandler defaultHandler() {
-    return concurrentHandler(new TypedMessageHandler(Response.class, new ResponseHandler()),
-            new TypedMessageHandler(ShutdownMessage.class, new ShutdownMessageHandler()),
-            new TypedMessageHandler(PerNodeDataBulkMessage.class, new PerNodeDataMessageHandler()),
-            new TypedMessageHandler(SharedDataBulkMessage.class, new SharedDataMessageHandler()),
-            new TypedMessageHandler(ActiveGossipMessage.class, new ActiveGossipMessageHandler()));
+    return concurrentHandler(
+        new TypedMessageHandler(Response.class, new ResponseHandler()),
+        new TypedMessageHandler(ShutdownMessage.class, new ShutdownMessageHandler()),
+        new TypedMessageHandler(PerNodeDataMessage.class, new PerNodeDataMessageHandler()),
+        new TypedMessageHandler(SharedDataMessage.class, new SharedDataMessageHandler()),
+        new TypedMessageHandler(ActiveGossipMessage.class, new ActiveGossipMessageHandler()),
+        new TypedMessageHandler(PerNodeDataBulkMessage.class, new PerNodeDataBulkMessageHandler()),
+        new TypedMessageHandler(SharedDataBulkMessage.class, new SharedDataBulkMessageHandler())
+    );
   }
 
   public static MessageHandler concurrentHandler(MessageHandler... handlers) {

@@ -20,11 +20,10 @@ package org.apache.gossip.manager.handlers;
 import org.apache.gossip.manager.GossipCore;
 import org.apache.gossip.manager.GossipManager;
 import org.apache.gossip.model.Base;
-import org.apache.gossip.model.PerNodeDataMessage;
-import org.apache.gossip.udp.UdpPerNodeDataBulkMessage;
+import org.apache.gossip.udp.UdpPerNodeDataMessage;
 
 public class PerNodeDataMessageHandler implements MessageHandler {
-  
+
   /**
    * @param gossipCore context.
    * @param gossipManager context.
@@ -33,9 +32,8 @@ public class PerNodeDataMessageHandler implements MessageHandler {
    */
   @Override
   public boolean invoke(GossipCore gossipCore, GossipManager gossipManager, Base base) {
-    UdpPerNodeDataBulkMessage udpMessage = (UdpPerNodeDataBulkMessage) base;
-    for (PerNodeDataMessage dataMsg: udpMessage.getMessages())
-      gossipCore.addPerNodeData(dataMsg);
+    UdpPerNodeDataMessage message = (UdpPerNodeDataMessage) base;
+    gossipCore.addPerNodeData(message);
     return true;
   }
 }
