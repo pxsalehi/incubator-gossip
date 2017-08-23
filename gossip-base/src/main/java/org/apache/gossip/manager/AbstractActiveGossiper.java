@@ -50,7 +50,7 @@ public abstract class AbstractActiveGossiper {
   private final Histogram sendPerNodeDataHistogram;
   private final Histogram sendMembershipHistogram;
   private final Random random;
-  private GossipSettings gossipSettings;
+  private final GossipSettings gossipSettings;
 
   public AbstractActiveGossiper(GossipManager gossipManager, GossipCore gossipCore, MetricRegistry registry) {
     this.gossipManager = gossipManager;
