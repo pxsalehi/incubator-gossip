@@ -81,9 +81,8 @@ public class GossipSettings {
    * @param cleanupInterval
    *          The cleanup interval in ms.
    */
-  public GossipSettings(int gossipInterval, int cleanupInterval, int windowSize,
-          int minimumSamples, double convictThreshold, String distribution,
-          boolean bulkTransfer, int bulkTransferSize) {
+  public GossipSettings(int gossipInterval, int cleanupInterval, int windowSize, int minimumSamples,
+          double convictThreshold, String distribution, boolean bulkTransfer) {
     this.gossipInterval = gossipInterval;
     this.cleanupInterval = cleanupInterval;
     this.windowSize = windowSize;
@@ -91,7 +90,6 @@ public class GossipSettings {
     this.convictThreshold = convictThreshold;
     this.distribution = distribution;
     this.bulkTransfer = bulkTransfer;
-    this.bulkTransferSize = bulkTransferSize;
   }
 
   /**
