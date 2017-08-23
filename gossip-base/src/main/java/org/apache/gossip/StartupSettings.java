@@ -55,6 +55,10 @@ public class StartupSettings {
   /** The list with gossip members to start with. */
   private final List<Member> gossipMembers;
 
+  /** Default setting values */
+  private static final boolean DEFAULT_BULK_TRANSFER = false;
+  private static final int DEFAULT_BULK_TRANSFER_SIZE = 100;
+
   /**
    * Constructor.
    * 
@@ -182,6 +186,8 @@ public class StartupSettings {
     double convictThreshold = jsonObject.get("convict_threshold").asDouble();
     String cluster = jsonObject.get("cluster").textValue();
     String distribution = jsonObject.get("distribution").textValue();
+    boolean bulkTransfer = jsonObject.get("bulk_transfer").asBoolean(DEFAULT_BULK_TRANSFER);
+    int bulkTransferSize = jsonObject.get("bulk_transfer_size").asInt(DEFAULT_BULK_TRANSFER_SIZE);
     if (cluster == null){
       throw new IllegalArgumentException("cluster was null. It is required");
     }
@@ -192,8 +198,8 @@ public class StartupSettings {
         jsonObject.get("protocol_manager_class").textValue() : 
         null;
     URI uri2 = new URI(uri);
-    GossipSettings gossipSettings = new GossipSettings(gossipInterval, cleanupInterval, windowSize, minSamples,
-        convictThreshold, distribution);
+    GossipSettings gossipSettings = new GossipSettings(gossipInterval, cleanupInterval, windowSize,
+            minSamples, convictThreshold, distribution, bulkTransfer, bulkTransferSize);
     if (transportClass != null) {
       gossipSettings.setTransportManagerClass(transportClass);
     }
