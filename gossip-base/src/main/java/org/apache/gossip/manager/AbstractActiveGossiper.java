@@ -121,14 +121,17 @@ public abstract class AbstractActiveGossiper {
       copySharedDataMessage(innerEntry.getValue(), message);
       udpMessage.addMessage(message);
       if (udpMessage.getMessages().size() == gossipSettings.getBulkTransferSize()) {
+        System.err.println("Sending a full batch of shared data!");
         gossipCore.sendOneWay(udpMessage, member.getUri());
         udpMessage = new UdpSharedDataBulkMessage();
         udpMessage.setUuid(UUID.randomUUID().toString());
         udpMessage.setUriFrom(me.getId());
       }
     }
-    if (udpMessage.getMessages().size() > 0)
+    if (udpMessage.getMessages().size() > 0) {
+      System.err.println("Sending a batch of shared data! size=" + udpMessage.getMessages().size());
       gossipCore.sendOneWay(udpMessage, member.getUri());
+    }
   }
 
   private void copySharedDataMessage(SharedDataMessage original, SharedDataMessage copy) {
@@ -185,14 +188,17 @@ public abstract class AbstractActiveGossiper {
         copyPerNodeDataMessage(innerEntry.getValue(), message);
         udpMessage.addMessage(message);
         if (udpMessage.getMessages().size() == gossipSettings.getBulkTransferSize()) {
+          System.err.println("Sending a full batch of per node data!");
           gossipCore.sendOneWay(udpMessage, member.getUri());
           udpMessage = new UdpPerNodeDataBulkMessage();
           udpMessage.setUuid(UUID.randomUUID().toString());
           udpMessage.setUriFrom(me.getId());
         }
       }
-      if (udpMessage.getMessages().size() > 0)
+      if (udpMessage.getMessages().size() > 0) {
+        System.err.println("Sending a batch of per node data! size=" + udpMessage.getMessages().size());
         gossipCore.sendOneWay(udpMessage, member.getUri());
+      }
     }
   }
 

@@ -51,6 +51,7 @@ public class PerNodeDataEventTest extends AbstractIntegrationBase {
     GossipSettings settings = new GossipSettings();
     settings.setPersistRingState(false);
     settings.setPersistDataState(false);
+    settings.setBulkTransfer(true);
     String cluster = UUID.randomUUID().toString();
     int seedNodes = 1;
     List<Member> startupMembers = new ArrayList<>();

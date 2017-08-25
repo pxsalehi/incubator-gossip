@@ -64,7 +64,7 @@ public class GossipSettings {
 
   private boolean bulkTransfer = false;
 
-  private int bulkTransferSize = 100;
+  private int bulkTransferSize = StartupSettings.DEFAULT_BULK_TRANSFER_SIZE;
   
   
   /**

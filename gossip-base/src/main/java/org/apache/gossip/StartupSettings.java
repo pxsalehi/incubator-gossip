@@ -57,7 +57,7 @@ public class StartupSettings {
 
   /** Default setting values */
   private static final boolean DEFAULT_BULK_TRANSFER = false;
-  private static final int DEFAULT_BULK_TRANSFER_SIZE = 100;
+  public static final int DEFAULT_BULK_TRANSFER_SIZE = 100;
 
   /**
    * Constructor.
