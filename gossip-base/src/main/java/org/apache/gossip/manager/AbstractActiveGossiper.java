@@ -85,9 +85,10 @@ public abstract class AbstractActiveGossiper {
       return;
     }
     long startTime = System.currentTimeMillis();
-    if (gossipSettings.isBulkTransfer())
+    if (gossipSettings.isBulkTransfer()) {
+      System.err.println("SharedBulkTransfer");
       sendSharedDataInBulkInternal(me, member);
-    else
+    } else
       sendSharedDataInternal(me, member);
     sharedDataHistogram.update(System.currentTimeMillis() - startTime);
   }
@@ -148,9 +149,10 @@ public abstract class AbstractActiveGossiper {
       return;
     }
     long startTime = System.currentTimeMillis();
-    if (gossipSettings.isBulkTransfer())
+    if (gossipSettings.isBulkTransfer()) {
       sendPerNodeDataInBulkInternal(me, member);
-    else
+      System.err.println("PerNodeBulkTransfer");
+    } else
       sendPerNodeDataInternal(me, member);
     sendPerNodeDataHistogram.update(System.currentTimeMillis() - startTime);
   }

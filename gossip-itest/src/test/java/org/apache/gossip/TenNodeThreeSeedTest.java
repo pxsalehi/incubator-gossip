@@ -18,41 +18,36 @@
 package org.apache.gossip; 
 
 import io.teknek.tunit.TUnit;
-import org.apache.gossip.manager.GossipManager;
-import org.apache.gossip.manager.GossipManagerBuilder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import org.junit.platform.runner.JUnitPlatform;
+import org.junit.runner.RunWith;
+import org.apache.gossip.manager.GossipManager;
+import org.apache.gossip.manager.GossipManagerBuilder;
+import org.junit.jupiter.api.Test;
 
-@RunWith(Parameterized.class)
+@RunWith(JUnitPlatform.class)
 public class TenNodeThreeSeedTest {
 
-  private int base;
-  private boolean bulkTransfer;
-
-  public TenNodeThreeSeedTest(int base, boolean bulkTransfer) {
-    this.base = base;
-    this.bulkTransfer = bulkTransfer;
-  }
-
-  @Parameters (name = "{index} base={0} bulkTransfer={1}")
-  public static Collection<Object[]> data() {
-    return Arrays.asList(new Object[][]{
-            {30100, false}, {30150, false}, {30200, true}
-    });
+  @Test
+  public void test() throws UnknownHostException, InterruptedException, URISyntaxException {
+    abc(30150);
   }
 
   @Test
-  public void test() throws InterruptedException, UnknownHostException, URISyntaxException {
-    GossipSettings settings = new GossipSettings(1000, 10000, 1000, 1, 1.6, "exponential", bulkTransfer);
+  public void testAgain() throws UnknownHostException, InterruptedException, URISyntaxException {
+    abc(30100);
+  }
+
+  public void abc(int base) throws InterruptedException, UnknownHostException, URISyntaxException {
+    GossipSettings settings = new GossipSettings(1000, 10000, 1000, 1, 1.6, "exponential", false);
     settings.setPersistRingState(false);
     settings.setPersistDataState(false);
     String cluster = UUID.randomUUID().toString();
