@@ -86,7 +86,6 @@ public abstract class AbstractActiveGossiper {
     }
     long startTime = System.currentTimeMillis();
     if (gossipSettings.isBulkTransfer()) {
-      System.err.println("SharedBulkTransfer");
       sendSharedDataInBulkInternal(me, member);
     } else
       sendSharedDataInternal(me, member);
@@ -122,7 +121,6 @@ public abstract class AbstractActiveGossiper {
       copySharedDataMessage(innerEntry.getValue(), message);
       udpMessage.addMessage(message);
       if (udpMessage.getMessages().size() == gossipSettings.getBulkTransferSize()) {
-        System.err.println("Sending a full batch of shared data!");
         gossipCore.sendOneWay(udpMessage, member.getUri());
         udpMessage = new UdpSharedDataBulkMessage();
         udpMessage.setUuid(UUID.randomUUID().toString());
@@ -130,7 +128,6 @@ public abstract class AbstractActiveGossiper {
       }
     }
     if (udpMessage.getMessages().size() > 0) {
-      System.err.println("Sending a batch of shared data! size=" + udpMessage.getMessages().size());
       gossipCore.sendOneWay(udpMessage, member.getUri());
     }
   }
@@ -151,7 +148,6 @@ public abstract class AbstractActiveGossiper {
     long startTime = System.currentTimeMillis();
     if (gossipSettings.isBulkTransfer()) {
       sendPerNodeDataInBulkInternal(me, member);
-      System.err.println("PerNodeBulkTransfer");
     } else
       sendPerNodeDataInternal(me, member);
     sendPerNodeDataHistogram.update(System.currentTimeMillis() - startTime);
@@ -190,7 +186,6 @@ public abstract class AbstractActiveGossiper {
         copyPerNodeDataMessage(innerEntry.getValue(), message);
         udpMessage.addMessage(message);
         if (udpMessage.getMessages().size() == gossipSettings.getBulkTransferSize()) {
-          System.err.println("Sending a full batch of per node data!");
           gossipCore.sendOneWay(udpMessage, member.getUri());
           udpMessage = new UdpPerNodeDataBulkMessage();
           udpMessage.setUuid(UUID.randomUUID().toString());
@@ -198,7 +193,6 @@ public abstract class AbstractActiveGossiper {
         }
       }
       if (udpMessage.getMessages().size() > 0) {
-        System.err.println("Sending a batch of per node data! size=" + udpMessage.getMessages().size());
         gossipCore.sendOneWay(udpMessage, member.getUri());
       }
     }
