@@ -87,8 +87,9 @@ public abstract class AbstractActiveGossiper {
     long startTime = System.currentTimeMillis();
     if (gossipSettings.isBulkTransfer()) {
       sendSharedDataInBulkInternal(me, member);
-    } else
+    } else {
       sendSharedDataInternal(me, member);
+    }
     sharedDataHistogram.update(System.currentTimeMillis() - startTime);
   }
 
@@ -148,8 +149,9 @@ public abstract class AbstractActiveGossiper {
     long startTime = System.currentTimeMillis();
     if (gossipSettings.isBulkTransfer()) {
       sendPerNodeDataInBulkInternal(me, member);
-    } else
+    } else {
       sendPerNodeDataInternal(me, member);
+    }
     sendPerNodeDataHistogram.update(System.currentTimeMillis() - startTime);
   }
 
